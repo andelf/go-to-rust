@@ -116,7 +116,6 @@ impl Sha1 {
          }
          self.write(tmp.slice_to(8));
          assert_eq!(self.x.len(), 0);
-         println!("checksum => {:?}", self);
          let (h0, h1, h2, h3, h4) = self.h;
 
          let mut ret = slice::with_capacity::<u8>(Size);
@@ -174,6 +173,8 @@ impl Hash for Sha1 {
         BlockSize
     }
 }
+
+
 
 #[test]
 fn test_sha1() {
