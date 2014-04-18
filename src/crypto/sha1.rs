@@ -6,19 +6,16 @@ use std::slice;
 use super::*;
 use super::super::hash::*;
 
-pub static Size : uint = 20;
-pub static BlockSize : uint = 64;
+pub static Size: uint = 20;
+pub static BlockSize: uint = 64;
 
 
-pub type Table = [u64, ..256];
-
-
-static CHUNK : uint = 64;
-static init0 : u32 = 0x67452301;
-static init1 : u32 = 0xEFCDAB89;
-static init2 : u32 = 0x98BADCFE;
-static init3 : u32 = 0x10325476;
-static init4 : u32 = 0xC3D2E1F0;
+static CHUNK: uint = 64;
+static init0: u32 = 0x67452301;
+static init1: u32 = 0xEFCDAB89;
+static init2: u32 = 0x98BADCFE;
+static init3: u32 = 0x10325476;
+static init4: u32 = 0xC3D2E1F0;
 
 
 static _K0 : u32 = 0x5A827999;
@@ -55,6 +52,7 @@ impl Sha1 {
     }
 
     fn block(&mut self, buf: &[u8]) {
+        assert!(buf.len() % CHUNK == 0);
         let mut w = [0u32, ..80]; // 0-15, 16-79
         let (mut h0, mut h1, mut h2, mut h3, mut h4) = self.h;
         for p in buf.chunks(CHUNK) {
@@ -160,6 +158,7 @@ impl Writer for Sha1 {
 impl Hash for Sha1 {
     fn reset(&mut self) {
         self.h = (init0, init1, init2, init3, init4);
+        self.x = Vec::new();
         self.len = 0;
     }
     fn digest(&self) -> ~[u8] {
@@ -187,7 +186,7 @@ fn test_sha1() {
 }
 
 #[test]
-fn test_sha1_big() {
+fn test_sha1_long() {
     let mut h = Sha1::new();
     h.write_str("welcome to china".repeat(10001));
     assert_eq!(h.hexdigest(), ~"da3884df7c84378ebf72b86e3fe43b2a4664d73a");
